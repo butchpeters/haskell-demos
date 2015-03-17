@@ -192,11 +192,11 @@ first `dotdotdot` second = first ... second
 
 
 
-----------------------------
--- FUNCTIONS 102
-----------------------------
+-------------------------------------------
+-- PATTERN MATCHING, GUARDS and RECURSION
+-------------------------------------------
 
--- Function parameters can be destructured with a concept called pattern matching
+-- We can destructure function parameters with pattern matching
 head' :: [a] -> a
 head' (x:xs) = x
 
@@ -205,3 +205,189 @@ fst' (a, _) = a
 
 prettyName :: ([Char], [Char]) -> [Char]
 prettyName (first, last) = first ++ " " ++ last
+
+-- A pattern can be any type constructor, but not an expression (see guards)
+
+
+
+
+
+
+-- We can define multiple patterns for a single function, but they all need to have the same type signature
+isEmpty :: [a] -> Bool
+isEmpty [] = True
+isEmpty (x:xs) = False
+
+
+
+
+
+
+
+
+-- Patterns are evaluated from top-to-bottom, using the first match it finds
+isSeven :: (Num a, Eq a) => a -> Bool
+isSeven 7 = True
+isSeven _ = False
+
+
+
+
+
+
+
+
+
+-- It's possible to have non-exhaustive patterns, in which case a runtime error can occur
+isEight :: (Num a, Eq a) => a -> Bool
+isEight 8 = True
+isEight 7 = False
+
+
+
+
+
+
+
+
+
+-- If we want to match a function based on an expression, we could use guards
+howBigIsMyList :: [a] -> [Char]
+howBigIsMyList xs
+	| length xs == 0 = "What List?"
+	| length xs < 10 = "Not so big"
+	| otherwise = "Pretty big"
+
+
+
+
+
+
+
+
+-- We can set up recursion using pattern matching and/or guards
+maximum' :: (Ord a) => [a] -> a  
+maximum' [] = error "maximum of empty list"  
+maximum' [x] = x  
+maximum' (x:xs)   
+    | x > maximum' xs = x  
+    | otherwise = maximum' xs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------
+-- PARTIAL FUNCTIONS
+------------------------------------
+
+-- Every function officially takes one parameter
+-- Any function that takes more than one parameter can take less parameters and return a partially applied function
+atLeastTen :: (Ord a, Num a) => a -> a
+atLeastTen = max 10
+
+
+
+
+
+
+
+
+-- Functions that take more than one parameter are said to be curried
+atLeastTen' :: (Ord a, Num a) => a -> a
+atLeastTen' x = ((max 10) x) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------
+-- HIGHER ORDER FUNCTIONS
+-----------------------------------
+
+-- We can use map to apply a function to every element in a list and return a new list
+doubleMe :: Num a => [a] -> [a]
+doubleMe xs = map (*2) xs
+
+
+
+
+
+
+
+
+-- We can reduce this due to partial functions
+doubleMe' :: Num a => [a] -> [a]
+doubleMe' = map (*2)
+
+
+
+
+
+
+
+
+
+-- We can use foldl with an anonymous function to reduce a list to a single value	
+add :: (Num a) => [a] -> a
+add xs = foldl (\acc x -> acc + x) 0 xs
+
+
+
+
+
+
+
+
+
+-- foldl1 works just like foldl, except the acc initializes to the first element in the list
+maximum'' :: (Num a, Ord a) => [a] -> a
+maximum'' xs = foldl1 (\acc x -> max acc x) xs 
+
+
+
+
+
+
+
+
+
+
+--------------------------------
+-- PAREN HELPERS
+--------------------------------
+
+-- $: function application.  Evaluates everything to the right and passes it as a parameter to the left
+howManyLessThanTen :: (Num a, Ord a) => [a] -> Int
+howManyLessThanTen xs = length (filter (< 10) xs)
+
+howManyLessThanTen' :: (Num a, Ord a) => [a] -> Int
+howManyLessThanTen' xs = length $ filter (< 10) xs
+
+
+
+
+
+
+
+
+-- dot (.): function composition.  Evaluates the rightmost function then passes the result to the next rightmost
