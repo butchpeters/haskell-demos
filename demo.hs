@@ -1,5 +1,16 @@
+-- What is a functional programming language?
+
+-- About Haskell
+
+-- https://github.com/Dobiasd/articles/blob/master/programming_language_learning_curves.md
+
+-- http://learnyouahaskell.com
+
 -- Launch ghci
 -- > :l demo.hs
+
+-- Import modules at the top of a file
+import Data.Char
 
 
 
@@ -391,3 +402,163 @@ howManyLessThanTen' xs = length $ filter (< 10) xs
 
 
 -- dot (.): function composition.  Evaluates the rightmost function then passes the result to the next rightmost
+filterBigWords :: [Char] -> [Char]
+filterBigWords str = (unwords (filter (\w -> length w < 5) (words str)))
+
+filterBigWords' :: [Char] -> [Char]
+filterBigWords' = unwords . filter (\w -> length w < 5) . words
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------
+-- DEFINING TYPES
+-----------------------
+
+-- We can make our own data type
+data Fruit = Orange | Apple | Strawberry
+
+
+
+
+
+
+-- Then we can use it in a function
+priceOfFruit :: Fruit -> Float
+priceOfFruit Orange = 1.00
+priceOfFruit Apple = 0.75
+priceOfFruit Strawberry = 0.10
+
+
+
+
+
+
+
+-- But we can't do anything useful with the fruit values themselves
+-- > Orange
+-- > Orange == Apple
+
+-- We can make our type an instance of the appropriate type class.  For the standard type classes, we can use deriving
+data Fruit' = Orange' | Apple' | Strawberry' deriving (Show, Eq)
+
+
+
+
+
+
+
+
+-- For non-standard type classes (or if we want to make a custom implementation of a standard type class) we use instance
+data Soda = Grape | Grapefruit deriving (Eq)
+
+instance Show Soda where 
+    show Grape = "This is purple."
+    show Grapefruit = "Why isn't this purple? -50 cent" -- https://www.youtube.com/watch?v=waCF81HdKAA
+
+
+
+
+
+
+
+-- Going back to our priceOfFruit function, wouldn't it be nice if we could write a generic price function?
+class Purchaseable a where
+    price :: a -> Float
+
+
+
+
+
+
+-- Now we can create instances of the Purchaseable type class for our different items in the store
+instance Purchaseable Fruit where
+    price = priceOfFruit
+
+instance Purchaseable Soda where
+    price Grape = 0.55
+    price Grapefruit = 0.50 -- see what I did there?
+
+
+
+
+
+
+
+-- Value constructors for types can take parameters like a function
+data Box = SquareBox Int | RectangleBox Int Int deriving (Show, Eq)
+
+
+-- Try making some boxes
+-- > SquareBox 5
+-- > RectangleBox 6 10
+
+
+
+
+-- We can use parameter destructuring to use values of this type in a function
+boxArea :: Box -> Int
+boxArea (SquareBox l) = l * l
+boxArea (RectangleBox l w) = l * w
+
+
+
+
+
+
+
+-- There is also a record syntax for more complex value structures
+data Employee = Worker {firstName :: String, lastName :: String, employeeId :: Int} deriving (Show, Eq)
+
+-- This automatically creates accessor functions for the fields
+-- > firstName Worker {firstName = "Butch", lastName = "Peters", employeeId = 1}
+
+
+
+
+
+
+
+
+
+
+
+---------------------
+-- I/O
+---------------------
+
+-- I/O is problematic for a purely functional language
+-- A function to get user input is not referentially transparent: it does not always return the same value
+-- A function that writes a string to the console has a side effect: the state of the screen changes
+
+-- We can control this impurity within a do-block.  The entire do-block evaluates to an IO action
+doToUpper :: IO ()
+doToUpper = do 
+    contents <- getContents
+    putStrLn (map toUpper contents)
+
+
+
+
+
+
+
+-- Now that we can interact with the user, let's compile this.  Just like a C application, we need a main function.
+-- main requires an IO action return type, so we'll call our doToUpper function directly
+main :: IO ()
+main = doToUpper
+
+
+
+
+-- You can run the program with either the runhaskell interpreter, or compile it with ghc
+-- $ runhaskell demo.hs 
+-- $ ghc demo.hs
