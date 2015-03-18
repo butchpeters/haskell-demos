@@ -11,19 +11,20 @@
 
 -- Import modules at the top of a file
 import Data.Char
+import Data.List
 
 
 
 
 ------------------------------
--- FUNCTIONS
+-- FUNCTION BASICS
 ------------------------------
 
 -- We can define a function
 greeting name = "Hello, " ++ name
 
 -- Where's the return statement?
--- I thought this was a strongly typed language...
+-- I thought this was a statically typed language...
 -- We can get the type of the function in ghci
 -- > :t greeting
 -- greeting :: [Char] -> [Char] reads (from left-to-right): function named 'greeting' takes a [Char] as a parameter and returns a [Char]
@@ -41,7 +42,7 @@ greeting' name = "Hello, " ++ name
 
 
 
--- ++ is a function too.  It's an infix function
+-- ++ looks like an operator, but it is a function too.  It's an infix function
 
 -- We can call an infix function as a prefix function
 greeting'' :: [Char] -> [Char]
@@ -207,7 +208,7 @@ first `dotdotdot` second = first ... second
 -- PATTERN MATCHING, GUARDS and RECURSION
 -------------------------------------------
 
--- We can destructure function parameters with pattern matching
+-- We can destructure function parameters that are constructed with other values with pattern matching
 head' :: [a] -> a
 head' (x:xs) = x
 
@@ -218,6 +219,7 @@ prettyName :: ([Char], [Char]) -> [Char]
 prettyName (first, last) = first ++ " " ++ last
 
 -- A pattern can be any type constructor, but not an expression (see guards)
+-- You use specific values, variables or _ to match, bind or not bind the destructured values from the input value 
 
 
 
@@ -515,12 +517,32 @@ boxArea (RectangleBox l w) = l * w
 
 
 
+
+
+
+-- Types can have parameters, similar to value constructors
+-- > :info Maybe
+
+-- The Maybe type is used to express the 'null' concept in Haskell.
+-- For example, the find function searches for a value in a list. What if it can't find the value?
+-- > :t find
+-- > find (> 4) [3, 5, 2, 6]
+-- > find (> 6) [3, 5, 2, 6]
+
+
+
+
+
+
+
+
+
+
 -- There is also a record syntax for more complex value structures
 data Employee = Worker {firstName :: String, lastName :: String, employeeId :: Int} deriving (Show, Eq)
 
 -- This automatically creates accessor functions for the fields
 -- > firstName Worker {firstName = "Butch", lastName = "Peters", employeeId = 1}
-
 
 
 
