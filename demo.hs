@@ -1,11 +1,3 @@
--- What is a functional programming language?
-
--- About Haskell
-
--- https://github.com/Dobiasd/articles/blob/master/programming_language_learning_curves.md
-
--- http://learnyouahaskell.com
-
 -- Launch ghci
 -- > :l demo.hs
 
@@ -23,6 +15,9 @@ import Data.List
 -- We can define a function
 greeting name = "Hello, " ++ name
 
+-- And then we can call it
+-- > greeting "Butch"
+
 -- Where's the return statement?
 -- I thought this was a statically typed language...
 -- We can get the type of the function in ghci
@@ -36,6 +31,8 @@ greeting name = "Hello, " ++ name
 -- By convention, we should define the type of the function, even when it can be inferred
 greeting' :: [Char] -> [Char]
 greeting' name = "Hello, " ++ name
+
+
 
 
 
@@ -88,7 +85,7 @@ first `dotdotdot` second = first ... second
 -- Lists can define a range
 -- > [1..10]
 
--- You can skip numbers in a range
+-- You can skip values in a range
 -- > [1,3..20]
 
 -- A list can be infinite
